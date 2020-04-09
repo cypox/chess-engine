@@ -23,7 +23,7 @@ int main(int argc, char** argv)
       std::cout << "\033[F" << "checkmate (or stalemate)! " << (x.to_play()?"black":"white") << " won (or draw)." << std::endl;
       break;
     }
-    /*
+    //*
     int i = 0;
     for (auto s : moves)
     {
@@ -31,17 +31,20 @@ int main(int argc, char** argv)
     }
     getchar();std::cout << "\033[F";
     //*/
-    
     int choice = rand() % moves.size();
-    x.play_unsafe(moves[choice]);
+
     std::cout << "move: " << moves[choice].to_str() << "     " << std::endl;
     if (x.to_play())
       log << move_number << ". " << moves[choice].to_str();
     else
+    {
       log << " " << moves[choice].to_str() << std::endl;
-    ++ move_number;
+      ++ move_number;
+    }
+
     for (int l = 0 ; l < 20 ; ++ l)
       std::cout << "\033[F";
+    x.play_unsafe(moves[choice]);
     x.print_board();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }

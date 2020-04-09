@@ -97,7 +97,7 @@ std::vector<move> board::get_piece_moves(piece& p) const {
     case W_PAWN:
       if (p.x+1 < 8 && m_state[p.x+1][p.y] == EMPTY)
         moves.emplace_back(p, p.x+1, p.y);
-      if (p.x < 2 && m_state[p.x+2][p.y] == EMPTY)
+      if (p.x < 2 && m_state[p.x+2][p.y] == EMPTY && m_state[p.x+1][p.y] == EMPTY)
         moves.emplace_back(p, p.x+2, p.y);
       if (p.x+1 < 8 && p.y+1 < 8 && m_state[p.x+1][p.y+1] != EMPTY)
         moves.emplace_back(p, p.x+1, p.y+1);
@@ -107,7 +107,7 @@ std::vector<move> board::get_piece_moves(piece& p) const {
     case B_PAWN:
       if (p.x >= 1 && m_state[p.x-1][p.y] == EMPTY)
         moves.emplace_back(p, p.x-1, p.y);
-      if (p.x >= 6 && m_state[p.x-2][p.y] == EMPTY)
+      if (p.x >= 6 && m_state[p.x-2][p.y] == EMPTY && m_state[p.x-1][p.y] == EMPTY)
         moves.emplace_back(p, p.x-2, p.y);
       if (p.x >= 1 && p.y+1 < 8 && m_state[p.x-1][p.y+1] != EMPTY)
         moves.emplace_back(p, p.x-1, p.y+1);

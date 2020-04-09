@@ -20,7 +20,11 @@ std::string move::piece_id(p_type t) {
     case W_PAWN:
     case B_PAWN:
       if (capture)
-        return "" + (char)(m_piece.x + 'a');
+      {
+        std::stringstream ss;
+        ss << (char)(m_piece.y + 'a');
+        return ss.str();
+      }
       else
         return "";
       break;
