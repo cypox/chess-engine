@@ -8,7 +8,7 @@ std::string move::to_str(std::vector<move>& moves) {
   std::stringstream conflicting;
   for (auto m : moves)
   {
-    if (m.destination_x == destination_x && m.destination_y == destination_y && m.m_piece != m_piece && m.m_piece.type == m_piece.type)
+    if (m.destination_x == destination_x && m.destination_y == destination_y && m.m_piece != m_piece && m.m_piece.type == m_piece.type && m_piece.type != W_PAWN && m_piece.type != B_PAWN)
     {
       duplicate = true;
       if (m.m_piece.y != m_piece.y) {
@@ -19,11 +19,11 @@ std::string move::to_str(std::vector<move>& moves) {
       /*
       std::cout << "duplicate found for move " << m.destination_x << "," << m.destination_y
                 << " and " << destination_x << "," << destination_y
-                << " with pieces " << m.m_piece.x << "," << m.m_piece.y
-                << " and piece " << m_piece.x << "," << m_piece.y
+                << " with pieces " << m.m_piece.x << "," << m.m_piece.y << " of type " << m.m_piece.type
+                << " and piece " << m_piece.x << "," << m_piece.y << " of type " << m.m_piece.type
                 << " resolved conflicting " << conflicting.str()
                 << std::endl;
-      */
+      //*/
     }
   }
   std::stringstream msg;

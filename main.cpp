@@ -1,6 +1,7 @@
 #include <iomanip> // for std::setfill and std::setw
 #include <thread> // for this_thread::sleep_for
 #include <chrono> // for chrono::milliseconds
+#include <sstream> // for filename
 #include <fstream> // for writing moves
 #include <iostream>
 
@@ -9,14 +10,16 @@
 
 int main(int argc, char** argv)
 {
-  //unsigned int seed = time(nullptr);
-  unsigned int seed = 1586417037;
+  unsigned int seed = time(nullptr);
+  //unsigned int seed = 1586417037;
   srand(seed);
   board x;
   int move_number = 1;
   std::cout << "board loaded successfully with seed " << seed << std::endl;
   x.print_board();
-  std::ofstream log("game.pgn", std::ofstream::out);
+  std::stringstream filename;
+  filename << "games/" << seed << ".pgn";
+  std::ofstream log(filename.str(), std::ofstream::out);
   log << "[Event \"Testing matches\"]" << std::endl;
   log << "[Site \"Valenciennes, France\"]" << std::endl;
   log << "[Date \"2020.09.04\"]" << std::endl;

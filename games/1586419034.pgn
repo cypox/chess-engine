@@ -1,0 +1,9 @@
+[Event "Testing matches"]
+[Site "Valenciennes, France"]
+[Date "2020.09.04"]
+[Round "-"]
+[White "cypox"]
+[Black "engine-v0"]
+[Result "1/2-1/2"]
+
+1. g3 Na6 2. e3 Rb8 3. d3 Nb4 4. Qf3 h6 5. Qd5 e5 6. Qxb7 c6 7. a3 Bd6 8. Nh3 Ke7 9. a4 Bxb7 10. Nd2 Qb6 11. a5 Qc7 12. Nf4 Rd8 13. Nb1 g5 14. b3 c5 15. a6 Bxa6 16. Rg1 Bc4 17. Bh3 gxf4 18. Ke2 Nd5 19. Ra6 Qc6 20. Rxc6 Rh7 21. exf4 Bb5 22. Na3 Nc3+ 23. Ke1 Ra8 24. Nxb5 Na2 25. Kf1 Rf8 26. Rc8 Nxc1 27. Na3 a5 28. Bxd7 h5 29. c4 Na2 30. Bg4 Nh6 31. Rg2 Re8 32. Ra8 Nf5 33. Ra6 Ke6 34. Be2 Ng7 35. g4 Rf8 36. Kg1 Nf5 37. b4 Ne3 38. Bf3 Nxg4 39. Kh1 Kf5 40. Bxg4+ Kxf4 41. Rg3 Rh6 42. Rg2 Bb8 43. bxa5 Rc6 44. h4 Nc1 45. Be6 f5 46. Bc8 e4 47. Nc2 Rf7 48. Nd4 Be5 49. Rg3 Na2 50. Re3 Kg4 51. Nb5 Bg3 52. Kg1 Bf4 53. Bd7 Bh2+ 54. Kxh2 Nb4 55. Nd4 Rc8 56. Rc6 Rg7 57. Rxc8 Rg5 58. Nb5 Rg6 59. a6 Rg7 60. Rg3+ Kxh4 61. Ra8 Rg6 62. Bxf5 Rg4 63. Na7 Rg6 64. Nb5 Rxg3 65. Be6 Rg8 66. Rb8 Nc6 67. dxe4 Ne7 68. Bc8 Kg5 69. Be6 Nd5 70. Bc8 Kh4 71. exd5 Rg5 72. f3 Rg4 73. Bxg4 Kg5 74. Ra8 h4 75. Rg8+ Kh6 76. Nd6 h3 77. Rf8 Kg6 78. Rd8 Kg7 79. Kh1 Kf6 80. Nf5 Kf7 81. Ne7 Kg7 82. a7 Kh7 83. Bxh3 Kh6 84. Bd7 Kg5 85. Bb5 Kh6 86. Kh2 Kh5 87. a8=N Kg5 88. Kg1 Kf6 89. Bd7 Ke5 90. Nb6 Kf4 91. Rg8 Kxf3 92. Kh1 Ke4 93. Rg1 Kf4 94. d6 Ke3 95. Na8 Ke4 96. Bc8 Kf4 97. Rg2 Ke3 98. Rh2 Kd3 99. Nf5 Kxc4 100. Rh3 Kb5 101. Rd3 Kc4 102. Kg2 Kb5 103. Nh4 Kb4 104. Rd5 Kc3 105. Kg1 Kb3 106. Nf3 c4 
