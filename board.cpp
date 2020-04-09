@@ -287,13 +287,13 @@ std::vector<move> board::get_piece_moves(piece& p, const std::vector<std::vector
         moves.emplace_back(p, p.x+1, p.y-1);
       if(p.x < 8 && p.y+1 < 8)
         moves.emplace_back(p, p.x, p.y+1);
-      if(p.x < 8 && p.y < 8)
+      if(p.x < 8 && p.y >= 1)
         moves.emplace_back(p, p.x, p.y-1);
-      if(p.x >= 1 && p.y+1 <8)
+      if(p.x >= 1 && p.y+1 < 8)
         moves.emplace_back(p, p.x-1, p.y+1);
       if(p.x >= 1 && p.y < 8)
         moves.emplace_back(p, p.x-1, p.y);
-      if(p.x >= 1 && p.y+1 >= 1)
+      if(p.x >= 1 && p.y >= 1)
         moves.emplace_back(p, p.x-1, p.y-1);
       break;
     default:

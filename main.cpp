@@ -9,7 +9,8 @@
 
 int main(int argc, char** argv)
 {
-  unsigned int seed = time(nullptr);
+  //unsigned int seed = time(nullptr);
+  unsigned int seed = 1586417037;
   srand(seed);
   board x;
   int move_number = 1;
@@ -26,6 +27,10 @@ int main(int argc, char** argv)
   log << std::endl;
   while(true)
   {
+    /*
+    if (move_number == 72)
+      std::cout << "debugging";
+    */
     std::vector<move> moves = x.get_possible_moves(x.to_play());
     if (moves.size() == 0)
     {
