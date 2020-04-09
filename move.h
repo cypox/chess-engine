@@ -6,6 +6,7 @@ class move{
   public:
   move(piece p, uint8 x, uint8 y) : m_piece(p), destination_x(x), destination_y(y) {};
   void set_capture(const bool val) {capture = val;};
+  void set_check(const bool val) {check = val;};
 
   std::string to_str();
 

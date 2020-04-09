@@ -23,13 +23,15 @@ int main(int argc, char** argv)
       std::cout << "\033[F" << "checkmate (or stalemate)! " << (x.to_play()?"black":"white") << " won (or draw)." << std::endl;
       break;
     }
-    //*
+    /*
     int i = 0;
     for (auto s : moves)
     {
       std::cout << "["  << std::setfill('0') << std::setw(2)<< ++ i << "] " << s.to_str() << "     " << std::endl;
     }
-    getchar();std::cout << "\033[F";
+    //getchar();std::cout << "\033[F";
+    int choice;
+    std::cin >> choice;
     //*/
     int choice = rand() % moves.size();
 

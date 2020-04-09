@@ -1,6 +1,23 @@
 #include "board.h"
 
-bool board::is_in_check(move& m) const {
+bool board::will_check(move& m) const {
+  piece opponent_king;
+  std::vector<piece> opponent_pieces = get_player_pieces(!white_to_play);
+  for (auto p : opponent_pieces)
+  {
+    if (p.type == W_KING || p.type == B_KING)
+      opponent_king = p;
+  }
+  std::vector<move> moves = get_moves_after_simulation(white_to_play, m);
+  for (auto p_move : moves)
+  {
+    if (p_move.destination_x == opponent_king.x && p_move.destination_y == opponent_king.y)
+      return true;
+  }
+  return false;
+}
+
+bool board::will_be_in_check(move& m) const {
   piece king;
   if (m.m_piece.type == W_KING || m.m_piece.type == B_KING)
   {
@@ -53,10 +70,11 @@ std::vector<piece> board::get_player_pieces(bool player) const {
   return pieces;
 }
 
-bool board::possible_in_board(move& m) const {
-  bool ret = !is_collision(m);
-  ret &= !is_in_check(m);
-  return ret;
+bool board::process_move(move& m) const {
+  bool possible_move = !is_collision(m);
+  possible_move &= !will_be_in_check(m);
+  m.set_check(will_check(m));
+  return possible_move;
 }
 
 std::vector<move> board::get_possible_moves(bool player) const {
@@ -65,7 +83,7 @@ std::vector<move> board::get_possible_moves(bool player) const {
   for (auto p:pieces) {
     std::vector<move> possible = get_piece_moves(p);
     for (auto m:possible) {
-      if (possible_in_board(m))
+      if (process_move(m))
         moves.push_back(m);
     }
   }
@@ -76,6 +94,25 @@ std::vector<move> board::get_all_moves_with_checks(bool player) const {
   std::vector<move> moves;
   std::vector<piece> pieces = get_player_pieces(player);
   for (auto p:pieces) {
+    std::vector<move> possible = get_piece_moves(p);
+    for (auto m:possible) {
+      if (!is_collision(m))
+        moves.push_back(m);
+    }
+  }
+  return moves;
+}
+
+std::vector<move> board::get_moves_after_simulation(bool player, move& m) const {
+  std::vector<move> moves;
+  std::vector<piece> pieces = get_player_pieces(player);
+  for (auto p:pieces) {
+    // move piece if concerned
+    if (p.x == m.m_piece.x && p.y == m.m_piece.y)
+    {
+      p.x = m.destination_x;
+      p.y = m.destination_y;
+    }
     std::vector<move> possible = get_piece_moves(p);
     for (auto m:possible) {
       if (!is_collision(m))
