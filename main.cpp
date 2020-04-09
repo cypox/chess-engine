@@ -5,6 +5,7 @@
 #include <fstream> // for writing moves
 #include <iostream>
 
+#include "engine.h"
 #include "board.h"
 #include "move.h"
 
@@ -14,6 +15,8 @@ int main(int argc, char** argv)
   //unsigned int seed = 1586417037;
   srand(seed);
   board x;
+  engine e(x);
+
   int move_number = 1;
   std::cout << "board loaded successfully with seed " << seed << std::endl;
   x.print_board();
@@ -34,7 +37,8 @@ int main(int argc, char** argv)
     if (move_number == 72)
       std::cout << "debugging";
     */
-    std::vector<move> moves = x.get_possible_moves(x.to_play());
+    //std::vector<move> moves = x.get_possible_moves(x.to_play());
+    std::vector<move> moves = e.ponder();
     if (moves.size() == 0)
     {
       std::cout << "\033[F" << "checkmate (or stalemate)! " << (x.to_play()?"black":"white") << " won (or draw)." << std::endl;
@@ -44,14 +48,17 @@ int main(int argc, char** argv)
     int i = 0;
     for (auto s : moves)
     {
-      std::cout << "["  << std::setfill('0') << std::setw(2)<< ++ i << "] " << s.to_str() << "     " << std::endl;
+      std::cout << "["  << std::setfill('0') << std::setw(2)<< ++ i << "] " << s.to_str(moves) << " (" << s.get_score() << ")     " << std::endl;
     }
-    //getchar();std::cout << "\033[F";
-    int choice;
-    std::cin >> choice;
+    getchar();std::cout << "\033[F";
     //*/
-    int choice = rand() % moves.size();
-    std::string move_str = moves[choice].to_str(moves);
+    //int choice = rand() % moves.size();
+    move mv;
+    if (x.to_play() == true)
+      mv = moves.front();
+    else
+      mv = moves.back();
+    std::string move_str = mv.to_str(moves);
 
     std::cout << "move: " << move_str << "     " << std::endl;
     if (x.to_play())
@@ -66,8 +73,9 @@ int main(int argc, char** argv)
       //*
       std::cout << "\033[F";
       //*/;
-    x.play_unsafe(moves[choice]);
+    x.play_unsafe(mv);
     x.print_board();
+    e.update_board(x);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   log << "1/2-1/2";

@@ -1,12 +1,12 @@
 #include "board.h"
 
-bool board::will_be_in_check(bool player, std::vector<std::vector<p_type> >& new_state) const {
-  int ENNEMY_PAWN = (player) * 6 + W_PAWN;
-  int ENNEMY_KNIGHT = (player) * 6 + W_KNIGHT;
-  int ENNEMY_BISHOP = (player) * 6 + W_BISHOP;
-  int ENNEMY_ROOK = (player) * 6 + W_ROOK;
-  int ENNEMY_QUEEN = (player) * 6 + W_QUEEN;
-  int ENNEMY_KING = (player) * 6 + W_KING;
+bool board::will_be_in_check(bool is_white, std::vector<std::vector<p_type> >& new_state) const {
+  int ENNEMY_PAWN = (is_white) * 6 + W_PAWN;
+  int ENNEMY_KNIGHT = (is_white) * 6 + W_KNIGHT;
+  int ENNEMY_BISHOP = (is_white) * 6 + W_BISHOP;
+  int ENNEMY_ROOK = (is_white) * 6 + W_ROOK;
+  int ENNEMY_QUEEN = (is_white) * 6 + W_QUEEN;
+  int ENNEMY_KING = (is_white) * 6 + W_KING;
   piece king;
   std::vector<piece> ennemy_pieces;
   for (int i = 0 ; i < 8 ; ++ i)
@@ -14,7 +14,7 @@ bool board::will_be_in_check(bool player, std::vector<std::vector<p_type> >& new
     for (int j = 0 ; j < 8 ; ++ j)
     {
       p_type p = new_state[i][j];
-      if ((p == W_KING && (player == true)) || (p == B_KING && (player == false)) )
+      if ((p == W_KING && (is_white == true)) || (p == B_KING && (is_white == false)) )
       {
         king = piece(i, j, p);
       }
@@ -48,10 +48,10 @@ bool board::is_collision(move& m) const {
   return collide;
 }
 
-std::vector<piece> board::get_player_pieces(bool player) const {
+std::vector<piece> board::get_player_pieces(bool is_white) const {
   std::vector<piece> pieces;
-  uint8 range_min = player?1:7;
-  uint8 range_max = player?6:12;
+  uint8 range_min = is_white?1:7;
+  uint8 range_max = is_white?6:12;
   for (int i = 0 ; i < 8 ; ++ i )
   {
     for (int j = 0 ; j < 8 ; ++ j )
@@ -77,9 +77,9 @@ bool board::process_move(move& m) const {
   return possible_move;
 }
 
-std::vector<move> board::get_possible_moves(bool player) const {
+std::vector<move> board::get_possible_moves(bool is_white) const {
   std::vector<move> moves;
-  std::vector<piece> pieces = get_player_pieces(player);
+  std::vector<piece> pieces = get_player_pieces(is_white);
   for (auto p:pieces) {
     std::vector<move> possible = get_piece_moves(p, m_state);
     for (auto m:possible) {
@@ -88,6 +88,13 @@ std::vector<move> board::get_possible_moves(bool player) const {
     }
   }
   return moves;
+}
+
+board* board::simulate_move(move& m) const {
+  std::vector<std::vector<p_type> > new_state = m_state;
+  new_state[m.destination_x][m.destination_y] = m.m_piece.type;
+  new_state[m.m_piece.x][m.m_piece.y] = EMPTY;
+  return new board(new_state, !white_to_play);
 }
 
 void board::play_unsafe(move& m) {

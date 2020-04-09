@@ -4,7 +4,7 @@ CFLAGS=-I$(IDIR)
 
 LIBS=-lm
 
-main: main.cpp board.cpp move.cpp piece.cpp
+main: main.cpp board.cpp move.cpp piece.cpp engine.cpp
 	$(CC) -g -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
