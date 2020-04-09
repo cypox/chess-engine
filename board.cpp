@@ -1,44 +1,37 @@
 #include "board.h"
 
-bool board::will_check(move& m) const {
-  piece opponent_king;
-  std::vector<piece> opponent_pieces = get_player_pieces(!white_to_play);
-  for (auto p : opponent_pieces)
-  {
-    if (p.type == W_KING || p.type == B_KING)
-      opponent_king = p;
-  }
-  std::vector<move> moves = get_moves_after_simulation(white_to_play, m);
-  for (auto p_move : moves)
-  {
-    if (p_move.destination_x == opponent_king.x && p_move.destination_y == opponent_king.y)
-      return true;
-  }
-  return false;
-}
-
-bool board::will_be_in_check(move& m) const {
+bool board::will_be_in_check(bool player, std::vector<std::vector<p_type> >& new_state) const {
+  int ENNEMY_PAWN = (player) * 6 + W_PAWN;
+  int ENNEMY_KNIGHT = (player) * 6 + W_KNIGHT;
+  int ENNEMY_BISHOP = (player) * 6 + W_BISHOP;
+  int ENNEMY_ROOK = (player) * 6 + W_ROOK;
+  int ENNEMY_QUEEN = (player) * 6 + W_QUEEN;
+  int ENNEMY_KING = (player) * 6 + W_KING;
   piece king;
-  if (m.m_piece.type == W_KING || m.m_piece.type == B_KING)
+  std::vector<piece> ennemy_pieces;
+  for (int i = 0 ; i < 8 ; ++ i)
   {
-    king = piece(m.destination_x, m.destination_y, m.m_piece.type);
-  }
-  else
-  {
-    std::vector<piece> pieces = get_player_pieces(white_to_play);
-    for (auto p : pieces)
+    for (int j = 0 ; j < 8 ; ++ j)
     {
-      if (p.type == W_KING || p.type == B_KING)
-        king = p;
+      p_type p = new_state[i][j];
+      if ((p == W_KING && (player == true)) || (p == B_KING && (player == false)) )
+      {
+        king = piece(i, j, p);
+      }
+      if (p == ENNEMY_PAWN || p == ENNEMY_KNIGHT || p == ENNEMY_BISHOP || p == ENNEMY_ROOK || p == ENNEMY_QUEEN || p == ENNEMY_KING)
+      {
+        ennemy_pieces.emplace_back(i, j, p);
+      }
     }
   }
-  std::vector<move> opponent_moves = get_all_moves_with_checks(!white_to_play);
-  for (auto opponent_m : opponent_moves)
+  for (auto p : ennemy_pieces)
   {
-    if (opponent_m.m_piece.x == m.destination_x && opponent_m.m_piece.y == m.destination_y)
-      continue; // this piece was captured by move m
-    if (opponent_m.destination_x == king.x && opponent_m.destination_y == king.y)
-      return true;
+    std::vector<move> ennemy_moves = get_piece_moves(p, new_state);
+    for (auto m : ennemy_moves)
+    {
+      if (m.destination_x == king.x && m.destination_y == king.y)
+        return true;
+    }
   }
   return false;
 }
@@ -72,8 +65,15 @@ std::vector<piece> board::get_player_pieces(bool player) const {
 
 bool board::process_move(move& m) const {
   bool possible_move = !is_collision(m);
-  possible_move &= !will_be_in_check(m);
-  m.set_check(will_check(m));
+  if (possible_move)
+  {
+    // TODO maybe modify m_state rather than copy
+    std::vector<std::vector<p_type> > new_state = m_state;
+    new_state[m.destination_x][m.destination_y] = m.m_piece.type;
+    new_state[m.m_piece.x][m.m_piece.y] = EMPTY;
+    possible_move = possible_move && !will_be_in_check(white_to_play, new_state);
+    m.set_check(will_be_in_check(!white_to_play, new_state));
+  }
   return possible_move;
 }
 
@@ -81,7 +81,7 @@ std::vector<move> board::get_possible_moves(bool player) const {
   std::vector<move> moves;
   std::vector<piece> pieces = get_player_pieces(player);
   for (auto p:pieces) {
-    std::vector<move> possible = get_piece_moves(p);
+    std::vector<move> possible = get_piece_moves(p, m_state);
     for (auto m:possible) {
       if (process_move(m))
         moves.push_back(m);
@@ -90,66 +90,84 @@ std::vector<move> board::get_possible_moves(bool player) const {
   return moves;
 }
 
-std::vector<move> board::get_all_moves_with_checks(bool player) const {
-  std::vector<move> moves;
-  std::vector<piece> pieces = get_player_pieces(player);
-  for (auto p:pieces) {
-    std::vector<move> possible = get_piece_moves(p);
-    for (auto m:possible) {
-      if (!is_collision(m))
-        moves.push_back(m);
-    }
-  }
-  return moves;
-}
-
-std::vector<move> board::get_moves_after_simulation(bool player, move& m) const {
-  std::vector<move> moves;
-  std::vector<piece> pieces = get_player_pieces(player);
-  for (auto p:pieces) {
-    // move piece if concerned
-    if (p.x == m.m_piece.x && p.y == m.m_piece.y)
-    {
-      p.x = m.destination_x;
-      p.y = m.destination_y;
-    }
-    std::vector<move> possible = get_piece_moves(p);
-    for (auto m:possible) {
-      if (!is_collision(m))
-        moves.push_back(m);
-    }
-  }
-  return moves;
-}
-
 void board::play_unsafe(move& m) {
-  m_state[m.destination_x][m.destination_y] = m.m_piece.type;
-  m_state[m.m_piece.x][m.m_piece.y] = EMPTY;
+  if (m.promotion == EMPTY)
+  {
+    m_state[m.destination_x][m.destination_y] = m.m_piece.type;
+    m_state[m.m_piece.x][m.m_piece.y] = EMPTY;
+  }
+  else
+  {
+    m_state[m.destination_x][m.destination_y] = m.promotion;
+    m_state[m.m_piece.x][m.m_piece.y] = EMPTY;
+  }
   switch_player();
 }
 
-std::vector<move> board::get_piece_moves(piece& p) const {
+std::vector<move> board::get_piece_moves(piece& p, const std::vector<std::vector<p_type> >& m_state) const {
   std::vector<move> moves;
   switch (p.type) {
     case W_PAWN:
-      if (p.x+1 < 8 && m_state[p.x+1][p.y] == EMPTY)
+      if (p.x+1 < 7 && m_state[p.x+1][p.y] == EMPTY)
         moves.emplace_back(p, p.x+1, p.y);
       if (p.x < 2 && m_state[p.x+2][p.y] == EMPTY && m_state[p.x+1][p.y] == EMPTY)
         moves.emplace_back(p, p.x+2, p.y);
-      if (p.x+1 < 8 && p.y+1 < 8 && m_state[p.x+1][p.y+1] != EMPTY)
+      if (p.x+1 < 7 && p.y+1 < 8 && m_state[p.x+1][p.y+1] != EMPTY)
         moves.emplace_back(p, p.x+1, p.y+1);
-      if (p.x+1 < 8 && p.y >= 1 && m_state[p.x+1][p.y-1] != EMPTY)
+      if (p.x+1 < 7 && p.y >= 1 && m_state[p.x+1][p.y-1] != EMPTY)
         moves.emplace_back(p, p.x+1, p.y-1);
+      if (p.x+1 == 7 && m_state[p.x+1][p.y] == EMPTY)
+      {
+        moves.emplace_back(p, p.x+1, p.y, W_QUEEN);
+        moves.emplace_back(p, p.x+1, p.y, W_ROOK);
+        moves.emplace_back(p, p.x+1, p.y, W_BISHOP);
+        moves.emplace_back(p, p.x+1, p.y, W_KNIGHT);
+      }
+      if (p.x+1 == 7 && p.y+1 < 8 && m_state[p.x+1][p.y+1] != EMPTY)
+      {
+        moves.emplace_back(p, p.x+1, p.y+1, W_QUEEN);
+        moves.emplace_back(p, p.x+1, p.y+1, W_ROOK);
+        moves.emplace_back(p, p.x+1, p.y+1, W_BISHOP);
+        moves.emplace_back(p, p.x+1, p.y+1, W_KNIGHT);
+      }
+      if (p.x+1 == 7 && p.y >= 1 && m_state[p.x+1][p.y-1] != EMPTY)
+      {
+        moves.emplace_back(p, p.x+1, p.y-1, W_QUEEN);
+        moves.emplace_back(p, p.x+1, p.y-1, W_ROOK);
+        moves.emplace_back(p, p.x+1, p.y-1, W_BISHOP);
+        moves.emplace_back(p, p.x+1, p.y-1, W_KNIGHT);
+      }
       break;
     case B_PAWN:
-      if (p.x >= 1 && m_state[p.x-1][p.y] == EMPTY)
+      if (p.x > 1 && m_state[p.x-1][p.y] == EMPTY)
         moves.emplace_back(p, p.x-1, p.y);
       if (p.x >= 6 && m_state[p.x-2][p.y] == EMPTY && m_state[p.x-1][p.y] == EMPTY)
         moves.emplace_back(p, p.x-2, p.y);
-      if (p.x >= 1 && p.y+1 < 8 && m_state[p.x-1][p.y+1] != EMPTY)
+      if (p.x > 1 && p.y+1 < 8 && m_state[p.x-1][p.y+1] != EMPTY)
         moves.emplace_back(p, p.x-1, p.y+1);
-      if (p.x >= 1 && p.y >= 1 && m_state[p.x-1][p.y-1] != EMPTY)
+      if (p.x > 1 && p.y >= 1 && m_state[p.x-1][p.y-1] != EMPTY)
         moves.emplace_back(p, p.x-1, p.y-1);
+      if (p.x == 1 && m_state[p.x-1][p.y] == EMPTY)
+      {
+        moves.emplace_back(p, p.x-1, p.y, B_QUEEN);
+        moves.emplace_back(p, p.x-1, p.y, B_ROOK);
+        moves.emplace_back(p, p.x-1, p.y, B_BISHOP);
+        moves.emplace_back(p, p.x-1, p.y, B_KNIGHT);
+      }
+      if (p.x == 1 && p.y+1 < 8 && m_state[p.x-1][p.y+1] != EMPTY)
+      {
+        moves.emplace_back(p, p.x-1, p.y+1, W_QUEEN);
+        moves.emplace_back(p, p.x-1, p.y+1, W_ROOK);
+        moves.emplace_back(p, p.x-1, p.y+1, W_BISHOP);
+        moves.emplace_back(p, p.x-1, p.y+1, W_KNIGHT);
+      }
+      if (p.x == 1 && p.y >= 1 && m_state[p.x-1][p.y-1] != EMPTY)
+      {
+        moves.emplace_back(p, p.x-1, p.y-1, W_QUEEN);
+        moves.emplace_back(p, p.x-1, p.y-1, W_ROOK);
+        moves.emplace_back(p, p.x-1, p.y-1, W_BISHOP);
+        moves.emplace_back(p, p.x-1, p.y-1, W_KNIGHT);
+      }
       break;
     case W_KNIGHT:
     case B_KNIGHT:

@@ -1,10 +1,38 @@
 #include <sstream>
+// #include <iostream> // for conflict resolution output
 
 #include "move.h"
 
-std::string move::to_str() {
+std::string move::to_str(std::vector<move>& moves) {
+  bool duplicate = false;
+  std::stringstream conflicting;
+  for (auto m : moves)
+  {
+    if (m.destination_x == destination_x && m.destination_y == destination_y && m.m_piece != m_piece && m.m_piece.type == m_piece.type)
+    {
+      duplicate = true;
+      if (m.m_piece.y != m_piece.y) {
+        conflicting << (char)(m_piece.y + 'a');
+      } else {
+        conflicting << (char)(m_piece.x + '1');
+      }
+      /*
+      std::cout << "duplicate found for move " << m.destination_x << "," << m.destination_y
+                << " and " << destination_x << "," << destination_y
+                << " with pieces " << m.m_piece.x << "," << m.m_piece.y
+                << " and piece " << m_piece.x << "," << m_piece.y
+                << " resolved conflicting " << conflicting.str()
+                << std::endl;
+      */
+    }
+  }
   std::stringstream msg;
-  msg << piece_id(m_piece.type) << (capture?"x":"") << case_id(destination_x, destination_y) << (checkmate?"#":(check?"+":""));
+  msg << piece_id(m_piece.type)
+      << (duplicate?conflicting.str():"")
+      << (capture?"x":"")
+      << case_id(destination_x, destination_y)
+      << (promotion==EMPTY?"":"="+piece_id(promotion))
+      << (checkmate?"#":(check?"+":""));
   return msg.str();
 }
 

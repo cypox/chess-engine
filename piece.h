@@ -25,6 +25,8 @@ class piece {
   piece() : x(0), y(0), type(W_PAWN) {};
   piece(uint8 x, uint8 y, p_type s) : x(x), y(y), type(s) {};
   piece& operator=(const piece&);
+  bool operator==(const piece&) const;
+  bool operator!=(const piece&) const;
 
   uint8 x;
   uint8 y;

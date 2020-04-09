@@ -9,12 +9,21 @@
 
 int main(int argc, char** argv)
 {
-  //srand(time(null));
+  unsigned int seed = time(nullptr);
+  srand(seed);
   board x;
   int move_number = 1;
-  std::cout << "board loaded successfully" << std::endl;
+  std::cout << "board loaded successfully with seed " << seed << std::endl;
   x.print_board();
-  std::ofstream log("moves", std::ofstream::out);
+  std::ofstream log("game.pgn", std::ofstream::out);
+  log << "[Event \"Testing matches\"]" << std::endl;
+  log << "[Site \"Valenciennes, France\"]" << std::endl;
+  log << "[Date \"2020.09.04\"]" << std::endl;
+  log << "[Round \"-\"]" << std::endl;
+  log << "[White \"cypox\"]" << std::endl;
+  log << "[Black \"engine-v0\"]" << std::endl;
+  log << "[Result \"1/2-1/2\"]" << std::endl;
+  log << std::endl;
   while(true)
   {
     std::vector<move> moves = x.get_possible_moves(x.to_play());
@@ -34,22 +43,26 @@ int main(int argc, char** argv)
     std::cin >> choice;
     //*/
     int choice = rand() % moves.size();
+    std::string move_str = moves[choice].to_str(moves);
 
-    std::cout << "move: " << moves[choice].to_str() << "     " << std::endl;
+    std::cout << "move: " << move_str << "     " << std::endl;
     if (x.to_play())
-      log << move_number << ". " << moves[choice].to_str();
+      log << move_number << ". " << move_str << " " << std::flush;
     else
     {
-      log << " " << moves[choice].to_str() << std::endl;
+      log << move_str << " " << std::flush;
       ++ move_number;
     }
 
     for (int l = 0 ; l < 20 ; ++ l)
+      //*
       std::cout << "\033[F";
+      //*/;
     x.play_unsafe(moves[choice]);
     x.print_board();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+  log << "1/2-1/2";
   log.close();
   return 0;
 }
