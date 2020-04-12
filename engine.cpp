@@ -1,6 +1,3 @@
-#include <vector>
-#include <algorithm>
-
 #include "engine.h"
 
 struct {
@@ -19,40 +16,64 @@ struct {
   board* local_board;
 } sort_by_piece_value;
 
-/*
-std::vector<move> engine:minmax(int depth)
+struct {
+  bool operator()(move& a, move& b) const
+  {
+    double lhs = a.get_score();
+    double rhs = b.get_score();
+    return lhs > rhs;
+  }
+} sort_by_move_scores;
+
+double engine::minmax(board& state, int depth)
 {
-  std::vector<move> moves = m_board.get_possible_moves(m_board.to_play());
   if (depth == 0)
   {
-    sort_by_piece_value.local_board = &m_board;
-    std::sort(moves.begin(), moves.end(), sort_by_piece_value);
-    return moves; // this should be the minimum
+    evaluated ++;
+    return engine::evaluate(state);
   }
   else
   {
+    std::vector<move> moves = get_possible_moves(state);
+    double max = -100.0;
+    double min = 100.0;
     for (auto m : moves)
     {
-      board* temp_board = m_board.simulate_move(m);
-      double branch_value = minmax(depth-1);
+      board* temp_board = state.simulate_move(m);
+      double branch_value = minmax(*temp_board, depth-1);
       m.set_score(branch_value);
       delete temp_board;
+      if (branch_value > max)
+        max = branch_value;
+      if (branch_value < min)
+        min = branch_value;
     }
+    return state.to_play()?max:min;
   }
 }
-*/
+
+std::vector<move> engine::ponder(const board state)
+{
+  std::vector<move> moves = get_possible_moves(state);
+  int len = moves.size();
+  for (int i = 0 ; i < len ; ++ i)
+  {
+      board* temp_board = state.simulate_move(moves[i]);
+      double branch_value = minmax(*temp_board, 2);
+      moves[i].set_score(branch_value);
+      delete temp_board;
+  }
+  std::sort(moves.begin(), moves.end(), sort_by_move_scores);
+  std::cout << "evaluated : " << evaluated << std::endl;
+  evaluated = 0;
+  return moves;
+}
 
 std::vector<move> engine::ponder()
 {
-  std::vector<move> moves = m_board.get_possible_moves(m_board.to_play());
+  std::vector<move> moves = get_possible_moves(m_board);
   sort_by_piece_value.local_board = &m_board;
   std::sort(moves.begin(), moves.end(), sort_by_piece_value);
-  /*
-  for (auto s : moves)
-  {
-    std::cout << s.to_str(moves) << " (" << s.get_score() << ")     " << std::endl;
-  }
-  */
   return moves;
 }
 
@@ -72,6 +93,15 @@ double engine::evaluate(const board& m_board)
     black_sum += engine::value(p);
   }
   return white_sum + black_sum;
+}
+
+std::vector<move> engine::get_possible_moves(const board& b)
+{
+  if (possible_moves.find(b) == possible_moves.end())
+  {
+    possible_moves[b] = b.get_possible_moves(b.to_play());
+  }
+  return possible_moves[b];
 }
 
 double engine::value(piece& p)

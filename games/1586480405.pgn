@@ -1,0 +1,9 @@
+[Event "Testing matches"]
+[Site "Valenciennes, France"]
+[Date "2020.09.04"]
+[Round "-"]
+[White "cypox"]
+[Black "engine-v0"]
+[Result "1/2-1/2"]
+
+1. d3 a5 2. a4 b5 3. b3 bxa4 4. Nh3 axb3 5. Kd2 bxc2 6. Kc3 cxd1=R 7. e3 c6 8. f4 c5 9. g3 c4 10. Rg1 a4 11. Rh1 cxd3 12. Bxd3 d6 13. Be2 d5 14. Kd2 d4 15. Ke1 d3 16. Kf1 Nc6 17. Kf2 

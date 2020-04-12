@@ -33,17 +33,21 @@ int main(int argc, char** argv)
   log << std::endl;
   while(true)
   {
-    /*
-    if (move_number == 72)
+    //*
+    if (move_number == 2)
+    {
+      exit(0);
       std::cout << "debugging";
-    */
-    //std::vector<move> moves = x.get_possible_moves(x.to_play());
-    std::vector<move> moves = e.ponder();
+    }
+    //*/
+
+    std::vector<move> moves = e.ponder(x);
     if (moves.size() == 0)
     {
       std::cout << "\033[F" << "checkmate (or stalemate)! " << (x.to_play()?"black":"white") << " won (or draw)." << std::endl;
       break;
     }
+    
     /*
     int i = 0;
     for (auto s : moves)
@@ -52,7 +56,7 @@ int main(int argc, char** argv)
     }
     getchar();std::cout << "\033[F";
     //*/
-    //int choice = rand() % moves.size();
+    
     move mv;
     if (x.to_play() == true)
       mv = moves.front();
@@ -69,7 +73,7 @@ int main(int argc, char** argv)
       ++ move_number;
     }
 
-    for (int l = 0 ; l < 20 ; ++ l)
+    for (int l = 0 ; l < 21 ; ++ l)
       //*
       std::cout << "\033[F";
       //*/;

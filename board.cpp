@@ -90,6 +90,14 @@ std::vector<move> board::get_possible_moves(bool is_white) const {
   return moves;
 }
 
+void board::do_move(move& m) {
+  // TODO use this with undo_move to save space
+}
+
+void board::undo_move(move&m) {
+  // TODO use this with do_move to save space
+}
+
 board* board::simulate_move(move& m) const {
   std::vector<std::vector<p_type> > new_state = m_state;
   new_state[m.destination_x][m.destination_y] = m.m_piece.type;
@@ -307,6 +315,10 @@ std::vector<move> board::get_piece_moves(piece& p, const std::vector<std::vector
       break;
   }
   return moves;
+}
+
+bool board::operator==(const board& b) const {
+  return (white_to_play == b.white_to_play) && (m_state == b.m_state);
 }
 
 board::board() {
